@@ -423,5 +423,5 @@ public class RedisUtil {
 ---------
 
 [1]: https://blog.csdn.net/yori_chen/article/details/79780692
-[2]: https://github.com/YoriChen/ssm-parent
-[3]: https://github.com/YoriChen/ssm-redis-shiro
+[2]: https://github.com/ryiann/ssm-parent
+[3]: https://github.com/ryiann/ssm-redis-shiro
