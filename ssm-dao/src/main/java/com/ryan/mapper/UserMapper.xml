@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ryan.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.ryan.pojo.UserDO">
+    <result column="T_USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="T_USER_NAME" jdbcType="VARCHAR" property="userName" />
+    <result column="T_PASS_WORD" jdbcType="CHAR" property="passWord" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    T_USER_ID, T_USER_NAME, T_PASS_WORD
+  	</sql>
+  <select id="selectUserInfoByUserName"  resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM T_USER
+    WHERE T_USER_NAME = #{userName,jdbcType=VARCHAR}
+  </select>
+</mapper>

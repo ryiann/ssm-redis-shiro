@@ -1,0 +1,63 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+  <!-- jedis 配置 -->
+  <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig"> 
+    <property name="maxIdle" value="${redis.maxIdle}" />
+    <property name="maxTotal" value="${redis.maxActive}" />
+    <property name="maxWaitMillis" value="${redis.maxWait}"></property>
+    <property name="testOnBorrow" value="${redis.testOnBorrow}" /> 
+  </bean>
+
+  <!-- redis服务器中心 -->
+  <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" 
+    p:host-name="${redis.host}"
+    p:port="${redis.port}"
+    p:password="${redis.pass}" 
+    p:pool-config-ref="poolConfig"/>
+
+  <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="keySerializer">
+      <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+    </property>
+    <property name="valueSerializer">
+      <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+    </property>
+  </bean>
+
+  <!-- cache 缓存拦截器配置 -->
+  <bean id="methodCacheInterceptor" class="com.ryan.interceptor.MethodCacheInterceptor">
+    <property name="redisUtil" ref="redisUtil"/>
+    <property name="defaultCacheExpireTime" value="${redis.cacheExpireTime}"/>
+    <!-- 禁用缓存的类名列表 -->
+    <property name="targetNamesList">
+      <list>
+        <value></value>
+      </list>
+    </property>
+    <!-- 禁用缓存的方法名列表 -->
+    <property name="methodNamesList">
+      <list>
+        <value></value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="redisUtil" class="com.ryan.utils.RedisUtil">
+    <property name="redisTemplate" ref="redisTemplate"/>
+  </bean>
+
+  <!--配置切面拦截方法 -->
+  <aop:config proxy-target-class="true">
+    <aop:pointcut id="controllerMethodPointcut" expression="execution(* com.ryan.service.impl.*.select*(..))"/>
+    <aop:advisor advice-ref="methodCacheInterceptor" pointcut-ref="controllerMethodPointcut"/>
+  </aop:config>
+
+</beans>
