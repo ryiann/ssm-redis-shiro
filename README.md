@@ -45,7 +45,7 @@ Spring-Data-Redis
 
 ```xml
 #redis
-redis.host=lq.auth.redis.master.lqiao.top
+redis.host=redis.lqiao.top
 redis.port=6379
 redis.pass=Hello123
 redis.maxIdle=300
